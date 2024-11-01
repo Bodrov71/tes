@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Тапалка</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            background-color: #001f3f; /* Тёмно-синий фон */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Отключаем прокрутку */
+        }
+        #tapArea {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Высота окна браузера */
+            cursor: pointer;
+            user-select: none;
+            color: white;
+            font-size: 150px; /* Размер буквы "S" */
+        }
+        .popupImage {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            animation: floatUp 1s ease-out forwards;
+        }
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="tapArea">S</div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        let score = 0;
+
+        document.getElementById('tapArea').addEventListener('click', (event) => {
+            score++;
+
+            // Отправляем данные боту
+            tg.sendData(JSON.stringify({ action: 'tap', score: score }));
+
+            // Получаем координаты клика
+            const rect = event.target.getBoundingClientRect();
+            const x = event.clientX - rect.left; // X внутри элемента
+            const y = event.clientY - rect.top;  // Y внутри элемента
+
+            // Создаем всплывающую картинку
+            const img = document.createElement('img');
+            img.src = 'image.png'; // Замените на имя вашей картинки
+            img.classList.add('popupImage');
+
+            // Устанавливаем положение картинки относительно окна
+            img.style.left = (event.clientX - 25) + 'px'; // Смещаем на половину ширины картинки
+            img.style.top = (event.clientY - 25) + 'px';  // Смещаем на половину высоты картинки
+
+            document.body.appendChild(img);
+
+            // Удаляем картинку после завершения анимации
+            setTimeout(() => {
+                document.body.removeChild(img);
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
